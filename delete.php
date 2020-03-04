@@ -1,15 +1,6 @@
 <?php
-//including the database connection file
-include("config.php");
- 
-//getting id of the data from url
-$id = $_GET['id'];
- 
-//deleting the row from table
-$sql = "DELETE FROM stats WHERE id=:id";
-$query = $dbConn->prepare($sql);
-$query->execute(array(':id' => $id));
- 
-//redirecting to the display page (index.php in our case)
-header("Location:index.php");
+require_once("db.php");
+$pdo_statement=$pdo_conn->prepare("delete from stats where id=" . $_GET['id']);
+$pdo_statement->execute();
+header('location:index.php');
 ?>

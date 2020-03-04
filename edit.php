@@ -1,92 +1,58 @@
 <?php
-// including the database connection file
-include_once("config.php");
- 
-if(isset($_POST['update']))
-{    
-    $id = $_POST['id'];
-    
-    $task=$_POST['task'];
-    $date=$_POST['date'];
-    $quantity=$_POST['quantity'];    
-    
-    // checking empty fields
-    if(empty($task) || empty($date) || empty($email)) {    
-            
-        if(empty($task)) {
-            echo "<font color='red'>Task field is empty.</font><br/>";
-        }
-        
-        if(empty($date)) {
-            echo "<font color='red'>Date field is empty.</font><br/>";
-        }
-        
-        if(empty($quantity)) {
-            echo "<font color='red'>Quantity field is empty.</font><br/>";
-        }        
-    } else {    
-        //updating the table
-        $sql = "UPDATE users SET task=:task, date=:date, quantity=:quantity WHERE id=:id";
-        $query = $dbConn->prepare($sql);
-                
-        $query->bindparam(':id', $id);
-        $query->bindparam(':task', $task);
-        $query->bindparam(':date', $date);
-        $query->bindparam(':quantity', $quantity);
-        $query->execute();
-        
-        // Alternative to above bindparam and execute
-        // $query->execute(array(':id' => $id, ':task' => $task, ':date' => $date, ':quantity' => $quantity));
-                
-        //redirectig to the display page. In our case, it is index.php
-        header("Location: index.php");
-    }
+require_once("db.php");
+if(!empty($_POST["save_record"])) {
+	$pdo_statement=$pdo_conn->prepare("update stats set task='" .
+	$_POST[ 'task' ] . "', quantity='" . $_POST[ 'quantity' ].
+	"', date='" . $_POST[ 'date' ]. "' where id=" . $_GET["id"]);
+	$result = $pdo_statement->execute();
+	if($result) {
+		header('location:index.php');
+	}
 }
-?>
-<?php
-//getting id from url
-$id = $_GET['id'];
- 
-//selecting data associated with this particular id
-$sql = "SELECT * FROM stats WHERE id=:id";
-$query = $dbConn->prepare($sql);
-$query->execute(array(':id' => $id));
- 
-while($row = $query->fetch(PDO::FETCH_ASSOC))
-{
-    $task = $row['task'];
-    $date = $row['date'];
-    $quantity = $row['quantity'];
-}
+$pdo_statement = $pdo_conn->prepare("SELECT * FROM stats where id=" . $_GET["id"]);
+$pdo_statement->execute();
+$result = $pdo_statement->fetchAll();
 ?>
 <html>
-<head>    
-    <title>Edit Data</title>
+<head>
+<title>PHP PDO CRUD - Edit Record</title>
+<style>
+body{width:615px;font-family:arial;letter-spacing:1px;line-height:20px;}
+.button_link {color:#FFF;text-decoration:none; background-color:#428a8e;padding:10px;}
+.frm-add {border: #c3bebe 1px solid;
+    padding: 30px;}
+.demo-form-heading {margin-top:0px;font-weight: 500;}	
+.demo-form-row{margin-top:20px;}
+.demo-form-field{width:300px;padding:10px;}
+.demo-form-submit{color:#FFF;background-color:#414444;padding:10px 
+50px;border:0px;cursor:pointer;}
+</style>
 </head>
- 
 <body>
-    <a href="index.php">Home</a>
-    <br/><br/>
-    
-    <form name="form1" method="post" action="edit.php">
-        <table border="0">
-            <tr> 
-                <td>Task</td>
-                <td><input type="text" name="task" value="<?php echo $task;?>"></td>
-            </tr>
-            <tr> 
-                <td>Date</td>
-                <td><input type="text" name="date" value="<?php echo $date;?>"></td>
-            </tr>
-            <tr> 
-                <td>Quantity</td>
-                <td><input type="text" name="quantity" value="<?php echo $quantity;?>"></td>
-            </tr>
-            <tr>
-                <td><input type="hidden" name="id" value=<?php echo $_GET['id'];?>></td>
-                <td><input type="submit" name="update" value="Update"></td>
-            </tr>
-        </table>
-    </form>
+<div style="margin:20px 0px;text-align:right;"><a href="index.php" 
+class="button_link">Back to List</a></div>
+<div class="frm-add">
+<h1 class="demo-form-heading">Edit Record</h1>
+<form name="frmAdd" action="" method="POST">
+  <div class="demo-form-row">
+	  <label>Task: </label><br>
+	  <input type="text" name="task" class="demo-form-field"
+	  value="<?php echo $result[0]['task']; ?>" required  />
+  </div>
+  <div class="demo-form-row">
+	  <label>Quantity: </label><br>
+	  <textarea name="quantity" class="demo-form-field" rows="5" 
+	  required ><?php echo $result[0]['quantity']; ?></textarea>
+  </div>
+  <div class="demo-form-row">
+	  <label>Date: </label><br>
+	  <input type="date" name="date" class="demo-form-field"
+	  value="<?php echo $result[0]['date']; ?>" required />
+  </div>
+  <div class="demo-form-row">
+	  <input name="save_record" type="submit" value="Save" class="demo-form-submit">
+  </div>
+  </form>
+</div>
 </body>
 </html>

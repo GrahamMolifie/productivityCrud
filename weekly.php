@@ -14,7 +14,7 @@ body{width:615px;font-family:arial;letter-spacing:1px;line-height:20px;}
 </head>
 <body>
 <?php	
-	$pdo_statement = $pdo_conn->prepare("SELECT * FROM stats ORDER BY id DESC");
+	$pdo_statement = $pdo_conn->prepare("SELECT * FROM stats WHERE date = 2020-01-01 ");
 	$pdo_statement->execute();
 	$result = $pdo_statement->fetchAll();
 ?>
@@ -39,11 +39,10 @@ body{width:615px;font-family:arial;letter-spacing:1px;line-height:20px;}
 		<td><?php echo $row["date"]; ?></td>
 		<td><?php echo $row["quantity"]; ?></td>
 		<td><a class="ajax-action-links" href='edit.php?id=<?php echo
-		$row['id']; ?>'>
-		<img src="crud-icon/edit.png" title="Edit" /></a> 
-		<a class="ajax-action-links" href='delete.php?id=
-		<?php echo $row['id']; ?>'>
-		<img src="crud-icon/delete.png" title="Delete" /></a></td>
+		$row['id']; ?>'><img src="crud-icon/edit.png" title="Edit" />
+		</a> <a class="ajax-action-links" href='delete.php?id=
+		<?php echo $row['id']; ?>'><img src="crud-icon/delete.png" 
+		title="Delete" /></a></td>
 	  </tr>
     <?php
 		}
